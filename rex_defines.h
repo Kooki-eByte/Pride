@@ -19,10 +19,6 @@ typedef double f64;
 typedef i8 b8;
 typedef i32 b32;
 
-#define KiB64(n) ((u64)(n) << 10)
-#define MiB64(n) ((u64)(n) << 20)
-#define GiB64(n) ((u64)(n) << 30)
-
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
