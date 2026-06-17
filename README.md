@@ -1,2 +1,3 @@
 # Pride
-C library for sound on game engine
+
+C library that takes in pixels on screen and modifies them to draw.
