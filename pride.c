@@ -30,11 +30,10 @@ struct PrideContext {
 PRIDEDEF b32 pride_in_bounds(PrideContext pc, int x, int y);
 PRIDEDEF void pride_blend_color(u32 *c1, u32 c2);
 // PRIDEDEF void pride_fill(PrideContext pc, u32 color);
-// PRIDEDEF void pride_rect(PrideContext pc, int x, int y, int w, int h, u32
-// color); PRIDEDEF void pride_frame(PrideContext pc, int x, int y, int w, int
-// h, size_t thiccness, u32 color); PRIDEDEF void pride_circle(PrideContext pc,
-// int cx, int cy, int r, u32 color); PRIDEDEF void pride_ellipse(PrideContext
-// pc, int cx, int cy, int rx, int ry, u32 color);
+// PRIDEDEF void pride_rect(PrideContext pc, int x, int y, int w, int h, u32 color); 
+// PRIDEDEF void pride_frame(PrideContext pc, int x, int y, int w, int h, size_t thiccness, u32 color);
+// PRIDEDEF void pride_circle(PrideContext pc, int cx, int cy, int r, u32 color);
+// PRIDEDEF void pride_ellipse(PrideContext pc, int cx, int cy, int rx, int ry, u32 color);
 PRIDEDEF void pride_dot(PrideContext pc, int x, int y, u32 color);
 PRIDEDEF void pride_line(PrideContext pc, int x1, int y1, int x2, int y2,
                          u32 color);
@@ -43,24 +42,21 @@ PRIDEDEF b32 pride_normalize_triangle(size_t width, size_t height, int x1,
                                       int *lx, int *hx, int *ly, int *hy);
 PRIDEDEF b32 pride_barycentric(int x1, int y1, int x2, int y2, int x3, int y3,
                                int xp, int yp, int *u1, int *u2, int *det);
-// PRIDEDEF void pride_triangle(PrideContext pc, int x1, int y1, int x2, int y2,
-// int x3, int y3, u32 color);
+PRIDEDEF void pride_triangle(PrideContext pc, int x1, int y1, int x2, int y2,
+                             int x3, int y3, u32 color);
 PRIDEDEF void pride_triangle3c(PrideContext pc, int x1, int y1, int x2, int y2,
                                int x3, int y3, u32 c1, u32 c2, u32 c3);
-// PRIDEDEF void pride_triangle3z(PrideContext pc, int x1, int y1, int x2, int
-// y2, int x3, int y3, f32 z1, f32 z2, f32 z3); PRIDEDEF void
-// pride_triangle3uv(PrideContext pc, int x1, int y1, int x2, int y2, int x3,
+// PRIDEDEF void pride_triangle3z(PrideContext pc, int x1, int y1, int x2, int y2, int x3, int y3, f32 z1, f32 z2, f32 z3);
+// PRIDEDEF void pride_triangle3uv(PrideContext pc, int x1, int y1, int x2, int y2, int x3,
 // int y3, f32 tx1, f32 ty1, f32 tx2, f32 ty2, f32 tx3, f32 ty3, f32 z1, f32 z2,
-// f32 z3, PrideContext texture); PRIDEDEF void
-// pride_triangle3uv_bilinear(PrideContext pc, int x1, int y1, int x2, int y2,
+// f32 z3, PrideContext texture); 
+// PRIDEDEF void pride_triangle3uv_bilinear(PrideContext pc, int x1, int y1, int x2, int y2,
 // int x3, int y3, f32 tx1, f32 ty1, f32 tx2, f32 ty2, f32 tx3, f32 ty3, f32 z1,
-// f32 z2, f32 z3, PrideContext texture); PRIDEDEF void
-// pride_sprite_blend(PrideContext pc, int x, int y, int w, int h, PrideContext
-// sprite); PRIDEDEF void pride_sprite_copy(PrideContext pc, int x, int y, int
-// w, int h, PrideContext sprite); PRIDEDEF void
-// pride_sprite_copy_bilinear(PrideContext pc, int x, int y, int w, int h,
-// PrideContext sprite); PRIDEDEF u32 pride_pixel_bilinear(PrideContext sprite,
-// int nx, int ny, int w, int h);
+// f32 z2, f32 z3, PrideContext texture);
+// PRIDEDEF void pride_sprite_blend(PrideContext pc, int x, int y, int w, int h, PrideContext sprite);
+// PRIDEDEF void pride_sprite_copy(PrideContext pc, int x, int y, int w, int h, PrideContext sprite);
+// PRIDEDEF void pride_sprite_copy_bilinear(PrideContext pc, int x, int y, int w, int h, PrideContext sprite); 
+// PRIDEDEF u32 pride_pixel_bilinear(PrideContext sprite, int nx, int ny, int w, int h);
 
 #define PRIDE_RED(color) (((color) & 0x000000FF) >> (8 * 0))
 #define PRIDE_GREEN(color) (((color) & 0x0000FF00) >> (8 * 1))
@@ -233,6 +229,22 @@ PRIDEDEF b32 pride_normalize_triangle(size_t width, size_t height, int x1,
     *hy = height - 1;
 
   return 1;
+}
+
+PRIDEDEF void pride_triangle(PrideContext pc, int x1, int y1, int x2, int y2,
+                             int x3, int y3, u32 color) {
+  int lx, hx, ly, hy;
+  if (pride_normalize_triangle(pc.width, pc.height, x1, y1, x2, y2, x3, y3, &lx,
+                               &hx, &ly, &hy)) {
+    for (int y = ly; y <= hy; y++) {
+      for (int x = lx; x <= hx; x++) {
+        int u1, u2, det;
+        if (pride_barycentric(x1, y1, x2, y2, x3, y3, x, y, &u1, &u2, &det)) {
+          pride_blend_color(&PRIDE_PIXEL(pc, x, y), color);
+        }
+      }
+    }
+  }
 }
 
 PRIDEDEF void pride_triangle3c(PrideContext pc, int x1, int y1, int x2, int y2,
